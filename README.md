@@ -163,6 +163,16 @@ echo "vsftp" | sudo tee -a /etc/vsftpd.userlist
 systemctl restart vsftpd
 ```
 
+8.- Ahora, desde el cliente podríamos acceder al servidor con FTP usando el usuario que hemos creado de la siguiente forma:
+
+```
+ftp -p 192.168.2.56
+```
+
+Recordemos que debemos de introducir la IP del equipo que estamos usando en el servidor. Una vez introducido el usuario vsftp y la contraseña vsftp veremos algo similar a esto:
+
+![/img/1.png](/img/1.png)
+
 ### 5.- Acceso al servidor FTP: anónimo tiene solo permiso de lectura en su directorio de trabajo.
 
 ### 6.- Acceso al servidor FTP: anónimo tiene permiso de escritura en el directorio sugerencias, que es un subdirectorio de su directorio raíz.
