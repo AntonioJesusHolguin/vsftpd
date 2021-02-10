@@ -175,6 +175,8 @@ Recordemos que debemos de introducir la IP del equipo que estamos usando en el s
 
 ### 5.- Acceso al servidor FTP: anónimo tiene solo permiso de lectura en su directorio de trabajo.
 
+
+
 ### 6.- Acceso al servidor FTP: anónimo tiene permiso de escritura en el directorio sugerencias, que es un subdirectorio de su directorio raíz.
 
 ### 7.- Acceso al servidor FTP: Creación de usuarios virtuales.
