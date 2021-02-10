@@ -66,7 +66,19 @@ Ahora que tenemos configurado nuestro esquema de red, podremos pasar a la instal
 apt-get install vsftpd
 ```
 
-Una vez finalice la instalación, podemos encontrar los ficheros de configuración que usaremos en /etc/. Para asegurarnos de que la el servicio funciona, ejecutaremos el siguiente comando:
+Una vez completada la instalación, nos aseguramos de que el servicio de inicie:
+
+```
+systemctl start vsftpd
+```
+
+Y que se inicie de forma automatica:
+
+```
+systemctl enable vsftpd
+```
+
+Si todo ha ido correctamente, al ejecutar este comando el servicio estará funcionando:
 
 ```
 systemctl status vsftpd
@@ -91,9 +103,65 @@ cat /etc/passwd
 ```
 ### 3.- Ficheros de configuración
 
-Vsftpd no tiene una carpeta con todos sus archivos de configuración. Veremos que el principal fichero es vsftpd.conf el cual se encuentra dentro de /etc/.
+Vsftpd no tiene una carpeta con todos sus archivos de configuración. Veremos que el principal fichero es vsftpd.conf el cual se encuentra dentro de /etc/. Vamos a crear una copia de seguridad de dicho fichero con el nombre vsftpd.conf.ORIGINAL, en caso de que algo falle.
 
 ### 4.- Acceso al servidor FTP: usuarios del sistema.
+
+La función principal de un servidor FTP es permitir que un cliente se conecte a un servidor, en este caso, haremos que un usuario se conecte usando a un usuario del servidor. Sigamos los siguientes pasos para ello:
+
+1.- Añadimos un usuario nuevo:
+
+```
+adduser vsftp
+```
+
+2.- Creamos un directorio de FTP para dicho usuario:
+
+```
+sudo mkdir /home/vsftp/ftp
+sudo chown nobody:nogroup /home/vsftp/ftp
+sudo chmod a-w /home/vsftp/ftp
+```
+
+3.- Creamos una carpeta para los ficheros:
+
+```
+sudo mkdir /home/vsftp/ftp/files
+sudo chown vsftp:vsftp /home/vsftp/ftp/files
+```
+
+4.- Creamos un fichero de prueba en la carpeta creada anteriormente:
+
+```
+echo "Saludos, soy vsftp" | sudo tee /home/vsftp/ftp/files/1.txt
+```
+
+5.- Vamos a editar el fichero de configuración principal, vsftpd.conf, con la configuración siguiente. Algunas lineas estarán comentadas mientras que otras habrá que añadirlas. Dejo a continuación un listado de todas las lineas descomentadas que tiene el fichero, para que podamos copiar esto con facilidad:
+
+```
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+chroot_local_user=YES
+user_sub_token=$USER
+local_root=/home/$USER/ftp
+pasv_min_port=40000
+pasv_max_port=50000
+userlist_enable=YES
+userlist_file=/etc/vsftpd.userlist
+userlist_deny=NO
+```
+6.- Vamos a crear el fichero que contiene el listado de los usuarios:
+
+```
+echo "vsftp" | sudo tee -a /etc/vsftpd.userlist
+```
+
+7.- Reiniciamos el servio de vsftpd:
+
+```
+systemctl restart vsftpd
+```
 
 ### 5.- Acceso al servidor FTP: anónimo tiene solo permiso de lectura en su directorio de trabajo.
 
