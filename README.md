@@ -105,6 +105,19 @@ cat /etc/passwd
 
 Vsftpd no tiene una carpeta con todos sus archivos de configuración. Veremos que el principal fichero es vsftpd.conf el cual se encuentra dentro de /etc/. Vamos a crear una copia de seguridad de dicho fichero con el nombre vsftpd.conf.ORIGINAL, en caso de que algo falle.
 
+Veamos algunos de los parámetros más destacables:
+
+ - anonymous_enable -> Activa o desactiva el usuario anónimo.
+ - local_enable -> Permitir a los usuarios locales loguearse.
+ - write_enable -> Permitir comandos de FTP de escritura.
+ - local_umask -> Permisos de los nuevos ficheros y directorios creados.
+ - chroot_list_enable -> Hace que los usuarios solo puedan entrar en sus respectivos directorios, aunque si un usuario tiene          permisos superiores podrá entrar a los del resto.
+ - chroot_list_file -> Listado de usuarios con sus rutas.
+ - ftpd_banner -> Mensaje de bienvenida
+ - ssl_enable -> Activa o desactiva FTPS
+
+Existen muchos más parámetros, algunos de ellos los iremos explorando en este proyecto.
+
 ### 4.- Acceso al servidor FTP: usuarios del sistema.
 
 La función principal de un servidor FTP es permitir que un cliente se conecte a un servidor, en este caso, haremos que un usuario se conecte usando a un usuario del servidor. Sigamos los siguientes pasos para ello:
@@ -169,13 +182,21 @@ systemctl restart vsftpd
 ftp -p 192.168.2.56
 ```
 
-Recordemos que debemos de introducir la IP del equipo que estamos usando en el servidor. Una vez introducido el usuario vsftp y la contraseña vsftp veremos algo similar a esto:
+9.- Recordemos que debemos de introducir la IP del equipo que estamos usando en el servidor. Una vez introducido el usuario vsftp y la contraseña vsftp veremos algo similar a esto:
 
 ![/img/1.png](/img/1.png)
 
+1.- Si nos fijamos, no podremos salir del directorio del usuario vsftp
+
+![/img/2.png](/img/2.png)
+
 ### 5.- Acceso al servidor FTP: anónimo tiene solo permiso de lectura en su directorio de trabajo.
 
+1.- En el apartado anterior hemos desactivado el usuario anónimo. Vamos a cambiar eso modificando la siguiente linea de /etc/vsftpd.conf:
 
+```
+anonymous_enable=YES
+```
 
 ### 6.- Acceso al servidor FTP: anónimo tiene permiso de escritura en el directorio sugerencias, que es un subdirectorio de su directorio raíz.
 
