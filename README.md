@@ -149,60 +149,122 @@ sudo chown vsftp:vsftp /home/vsftp/ftp/files
 echo "Saludos, soy vsftp" | sudo tee /home/vsftp/ftp/files/1.txt
 ```
 
-5.- Vamos a editar el fichero de configuración principal, vsftpd.conf, con la configuración siguiente. Algunas lineas estarán comentadas mientras que otras habrá que añadirlas. Dejo a continuación un listado de todas las lineas descomentadas que tiene el fichero, para que podamos copiar esto con facilidad:
-
-```
-anonymous_enable=NO
-local_enable=YES
-write_enable=YES
-chroot_local_user=YES
-user_sub_token=$USER
-local_root=/home/$USER/ftp
-pasv_min_port=40000
-pasv_max_port=50000
-userlist_enable=YES
-userlist_file=/etc/vsftpd.userlist
-userlist_deny=NO
-```
-6.- Vamos a crear el fichero que contiene el listado de los usuarios:
+5.- Vamos a crear el fichero que contiene el listado de los usuarios:
 
 ```
 echo "vsftp" | sudo tee -a /etc/vsftpd.userlist
 ```
 
-7.- Reiniciamos el servio de vsftpd:
+6.- Reiniciamos el servio de vsftpd:
 
 ```
 systemctl restart vsftpd
 ```
 
-8.- Ahora, desde el cliente podríamos acceder al servidor con FTP usando el usuario que hemos creado de la siguiente forma:
+7.- Ahora, desde el cliente podríamos acceder al servidor con FTP usando el usuario que hemos creado de la siguiente forma:
 
 ```
 ftp -p 192.168.2.56
 ```
 
-9.- Recordemos que debemos de introducir la IP del equipo que estamos usando en el servidor. Una vez introducido el usuario vsftp y la contraseña vsftp veremos algo similar a esto:
+8.- Recordemos que debemos de introducir la IP del equipo que estamos usando en el servidor. Una vez introducido el usuario vsftp y la contraseña vsftp veremos algo similar a esto:
 
 ![/img/1.png](/img/1.png)
 
-1.- Si nos fijamos, no podremos salir del directorio del usuario vsftp
+9.- Si nos fijamos, no podremos salir del directorio del usuario vsftp
 
 ![/img/2.png](/img/2.png)
 
 ### 5.- Acceso al servidor FTP: anónimo tiene solo permiso de lectura en su directorio de trabajo.
 
-1.- En el apartado anterior hemos desactivado el usuario anónimo. Vamos a cambiar eso modificando la siguiente linea de /etc/vsftpd.conf:
+1.- Primero vamos a activar al usuario anónimo con la siguiente linea en /etc/vsftpd.conf:
 
 ```
 anonymous_enable=YES
 ```
 
+2.- Su ruta por defecto es /srv/ftp. Por defecto no puede crear archivos ni carpetas, solo leerlos:
+
+![/img/3.png](/img/3.png)
+
 ### 6.- Acceso al servidor FTP: anónimo tiene permiso de escritura en el directorio sugerencias, que es un subdirectorio de su directorio raíz.
+
+1.- Vamos a crear un directorio llamado "sugerencias" donde el usuario anónimo pueda escribir, primero vamos a crear la carpeta:
+
+```
+mkdir /srv/ftp/sugerencias
+```
+
+2.- Le otorgamos permisos al usuario ftp sobre sugerencias:
+
+```
+chown ftp:nogroup /srv/ftp/sugerencias/
+```
+
+3.- Accedemos a /etc/vsftpd.conf y configuramos las siguientes directivas:
+
+```
+write_enable=YES
+anon_other_write_enable=YES
+chroot_list_enable=NO
+anon_upload_enable=YES
+```
+
+4.- Reiniciamos el servicio de vsftpd:
+
+```
+systemctl restart vsftpd
+```
+
+5.- Ahora podremos crear archivos en sugerencias con el usuario anónimo:
+
+![/img/4.png](/img/4.png)
 
 ### 7.- Acceso al servidor FTP: Creación de usuarios virtuales.
 
 ### 8.- Acceso seguro al servidor FTP
+
+1.- Para esta última práctica, vamos a implementar FTPS en nuestro servidor. Usaremos OpenSSL, por lo que debemos de instalarlo:
+
+```
+apt install openssl
+```
+
+2.- Generamos una clave:
+
+```
+openssl genrsa -out vsftpd.key 2048
+```
+
+3.- Generamos un certificado y rellenamos los campos:
+
+```
+openssl req -new -key vsftpd.key vsftpd.csr
+```
+
+4.- Firmamos dicho certificado:
+
+```
+openssl x509 -req -days 365 -in vsftpd.csr -signkey vsftpd.key -out vsftpd.crt
+```
+
+5.- Configuramos las siguientes lineas en /etc/vsftpd.conf:
+
+```
+rsa_cert_file=/etc/ssl/vsftpd.crt
+rsa_private_key_file=/etc/ssl/vsftpd.key
+ssl_enable=YES
+```
+
+6.- Reiniciamos el servicio de vsftpd:
+
+```
+systemctl restart vsftpd
+```
+
+7.- Ahora intentemos entrar al servidor, veremos que nos sale el siguiente mensaje:
+
+![/img/5.png](/img/5.png)
 
 <a name="ref"></a>
 ## 6.- Referencias
