@@ -173,7 +173,7 @@ ftp -p 192.168.2.56
 
 9.- Si nos fijamos, no podremos salir del directorio del usuario vsftp
 
-![/img/2.png](/img/2.png)
+![/img/2.PNG](/img/2.PNG)
 
 ### 5.- Acceso al servidor FTP: anónimo tiene solo permiso de lectura en su directorio de trabajo.
 
@@ -185,7 +185,7 @@ anonymous_enable=YES
 
 2.- Su ruta por defecto es /srv/ftp. Por defecto no puede crear archivos ni carpetas, solo leerlos:
 
-![/img/3.png](/img/3.png)
+![/img/3.PNG](/img/3.PNG)
 
 ### 6.- Acceso al servidor FTP: anónimo tiene permiso de escritura en el directorio sugerencias, que es un subdirectorio de su directorio raíz.
 
@@ -218,7 +218,7 @@ systemctl restart vsftpd
 
 5.- Ahora podremos crear archivos en sugerencias con el usuario anónimo:
 
-![/img/4.png](/img/4.png)
+![/img/4.PNG](/img/4.PNG)
 
 ### 7.- Acceso al servidor FTP: Creación de usuarios virtuales.
 
@@ -264,7 +264,7 @@ systemctl restart vsftpd
 
 7.- Ahora intentemos entrar al servidor, veremos que nos sale el siguiente mensaje:
 
-![/img/5.png](/img/5.png)
+![/img/5.PNG](/img/5.PNG)
 
 <a name="ref"></a>
 ## 6.- Referencias
