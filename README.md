@@ -222,6 +222,57 @@ systemctl restart vsftpd
 
 ### 7.- Acceso al servidor FTP: Creación de usuarios virtuales.
 
+1.- Vamos a proceder a crear usuarios virtuales en nuestro servidor FTP. Primero instalaremos el siguiente paquete:
+
+```
+apt install libpam-pwdfile
+```
+
+2.- Vamos a editar el fichero /etc/vsftpd.conf y tener una configuración como la siguiente:
+
+```
+guest_enable=YES
+virtual_use_local_privs=YES
+user_sub_token=$USER
+local_root=/home/$USER
+chroot_local_user=YES
+```
+
+3.- Creamos un fichero en /etc llamado virtusers.txt y añadimos lo siguiente:
+
+```
+virtuser
+1234
+```
+
+4.- Ejecutamos el siguiente comando:
+
+```
+db_load -T -t hash -f /etc/virtusers.txt /etc/virtusers.db
+```
+
+5.- Entamos en /etc/pam.d/vsftpd y añadimos las siguientes lineas:
+
+```
+auth required pam_userdb.so db=/etc/virtusers
+account required pam_userdb.so db=/etc/virtusers
+```
+
+6.- Creamos el directorio del usuario virtual y le damos permisos:
+
+```
+mkdir /home/virtuser
+chown ftp:nogroup /home/virtuser
+```
+
+7.- Reiniciamos vsftpd:
+
+```
+systemctl restart vsftpd
+```
+
+8.- Una vez completado esto, tendriamos disponible un usuario virtual, sin embargo, no he conseguido que funcione.
+
 ### 8.- Acceso seguro al servidor FTP
 
 1.- Para esta última práctica, vamos a implementar FTPS en nuestro servidor. Usaremos OpenSSL, por lo que debemos de instalarlo:
@@ -270,4 +321,4 @@ systemctl restart vsftpd
 ## 6.- Referencias
 
 - [www.howtoforge.com](https://www.howtoforge.com/tutorial/how-to-install-and-configure-vsftpd/)
-- []
+- [www.linuxcloudvps.com](https://www.linuxcloudvps.com/blog/setup-virtual-users-in-vsftpd/)
